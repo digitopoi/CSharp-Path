@@ -633,4 +633,336 @@ foreach(int score in scores)
 double averageScore = (double)totalScore / scores.Length;
 ```
 
+## Methods, Fields and Properties
 
+- Members you can attach to a type
+
+### Methods
+
+- Methods define behavior
+
+- Every method has an access modifier
+
+  - **private** (default) - only available to other code inside the same class
+  - **internal** - only available to code inside of the same project
+  - **public** - available everywhere
+
+- Every method has a return type
+  - **void** means the method doesn't return a value to the caller
+
+- Every method has a name
+
+- Every method has 0 or more parameters
+  - Use params keyword to accept a variable number of parameters
+    - not something you use regularly, but extremely powerful in the right scenario
+
+- Every method has a **method signature**
+  - unique identifier for a method
+  - (name) + (# and types of parameters)
+  - return type of a method is **not** part of the method signature
+  - ex: 
+    - WriteAsBytes(int value)
+    - WriteAsBytes(string word)
+    - two different methods and I can have both in my class
+
+```c#
+public void WriteAsBytes(int value)
+{
+    byte[] bytes = BitConverter.GetBytes(value);
+
+    foreach(byte b in bytes)
+    {
+        Console.WriteLine("0x{0:X2} ", b);
+    }
+}
+```
+
+#### method overloading 
+- can have as many methods with the same name as you need, as long as the parameter list is different
+
+```c#
+static void Main(string[] args)
+        {
+            GradeBook book = new GradeBook();
+            book.AddGrade(91);
+            book.AddGrade(89.5f);
+            book.AddGrade(75);
+
+            GradeStatistics stats = book.ComputeStatistics();
+            WriteResult("Average", stats.AverageGrade);
+            WriteResult("Highest", (int)stats.HighestGrade);
+            WriteResult("Lowest", stats.LowestGrade);
+        }
+
+static void WriteResult(string description, int result) => Console.WriteLine($"{description}: {result}");
+
+static void WriteResult(string description, float result) => Console.WriteLine($"{description}: {result:F2}");
+```
+
+### Fields
+
+- Fields are variables of a class
+- They define the state or the data that you want to hold as part of an object
+- Usually fields are made private and the name is lowercase with an underscore
+- A readonly field means that it can only be assigned in the constructor or when the field is defined with a field initializer
+
+```c#
+public class Animal
+{
+    private readonly string _name;      //  private field
+
+    public Animal(string name)
+    {
+        _name = name;
+    }
+}
+```
+
+### Properties
+
+- A property is similar to a field because it controls state and data associated wtih an object
+- Unlike a field, a property has a special syntax we can use to control what happens when someone reads or writes the data
+  - **get or set accessors**
+  - able to do logic or validation with data inputs or reads
+  - whatever value someone is trying to read or write is implicitly passed as "value" (think of it almost like a parameter)
+
+```c#
+public class Animal
+{
+    private string _name;
+
+    public string Name
+    {
+        get { return _name; }
+        set
+        {
+            if (!String.IsNullOrEmpty(value))
+            {
+                _name = value;                  //  value is implictly passed
+            }
+        }
+    }
+}
+```
+
+#### Auto-implemented properties
+
+- have the keywords get and set inside with semicolons after each, and there's no curly braces or code
+- behind the scenes, the C# compiler will automatically create a field to store the value for this property
+- it will automatically read that field during a get operation and write to the field during a set operation
+
+
+```c#
+public string Name
+{
+    get; 
+    set;
+}
+```
+
+### Fields vs. Properties
+
+- To the user, they are the same. 
+
+- However, there are some parts of the .NET Framework and other frameworks that treat fiels and properties differently
+
+- Often if you are performing serialization (taking an object and serializing it to XML, JSON, or saving it to a database)
+
+  - some frameworks only look at properties when they do the serialization
+
+- There are also data binding features in the .NET framework (assigning an object to some part of your user interface)
+  
+  - some data binding features will only move properties, they won't look at fields
+
+- **In general, if you're going to make the member publically available, use a property instead of a field**
+
+### Events
+
+- Allow a class to send notifications to other classes or objects
+- To keep track of components that do interesting things at unpredictable times.
+- The **publisher** raises the event
+- One or more **subscribers** process the event
+- The beauty of of events is the publisher doesn't need to keep track of who is subscribing and the subscribers don't need to know about each other
+  - **this is done through the magic of delegates in C#**
+
+### Delegates
+
+- Imagine needing to declare a variable that references as a method (instead of an integer, string, class object etc.)
+  - a method that encapsulates executable code
+  - you can then invoke the variable like you would invoke a method by using parentheses and optionally passing some parameters along.
+
+- In order for this to work, you'll need to create a delegate type
+
+- **delegate** - a type that references methods
+
+- The type definition looks almost like a method definition, describes the methods that I want to call.
+
+```c#
+public delegate void Writer(string message);
+```
+
+- A variable of the type above will point to a method that returns void and takes a string parameter
+- There are no curly braces - I'm not defining a method with executable code
+- Defining a type that I can use to create variables and point those variables to methods that have this signature and return type
+
+```c#
+public class Logger
+{
+    public void WriteMessage(String message)
+    {
+        Console.WriteLine(message);
+    }
+}
+```
+
+- Once I have the Logger class, I can instantiate a Logger
+- After instantiating a Logger, I can invoke a WriteMessage() method and have the Logger do something interesting like a print a message to the screen
+
+- I can also write a bit of code that instantiates a Logger and then instantiates a delegate that references the WriteMessage method itself of the Logger object
+
+```c#
+Logger logger = new Logger();
+Writer writer = new Writer(logger.WriteMessage);
+writer("Success!");
+```
+
+- I'm not invoking logger.WriteMessage - notice that there are no parameters after WriteMessage
+
+- This code is creating a new instance of a delegate and passing the WriteMessage method to this writer delegate
+- That delegate is saved into a variable named writer, and I can now invoke logger.WriteMessage just by invoking this variable
+- All I need to do is apply parentheses to the variable and pass along the string parameter that I want to Logger to use
+
+NameChangedDelegate.cs
+```c#
+public delegate void NameChangedDelegate(string existingName, string newName);
+```
+
+GradeBook.cs
+```c#
+public string Name
+{
+    get
+    {
+        return _name;
+    }
+    set
+    {
+        if (!String.IsNullOrEmpty(value))
+        {
+            if (_name != value)             //  Name changed
+            {
+                NameChanged(_name, value)   //  Invoke NameChangedDelegate
+            }
+            _name = value;                  //  Name now equals the value implicitly passed
+        }
+    }
+}
+
+public NameChangedDelegate NameChanged;
+```
+
+Program.cs
+```c#
+static void main(string[] args)
+{
+    GradeBook book = new GradeBook();
+
+    book.NameChanged = new NameChangedDelegate(OnNameChanged);      //  Invoke the delegate - method will be called when name changes
+}
+
+//  Define the method that will run when name changed
+static void OnNameChanged(string existingName, string newName) => Console.WriteLine($"Grade book changing from {existingName} to {newName}");       
+```
+
+- Add delegates with += operator:
+
+```c#
+book.NameChanged += new NameChangedDelegate(OnNameChanged);
+book.NameChanged += new NameChangedDelegate(OnNameChanged2);
+```
+
+- Remove delegate from the event with -= operator
+
+### Events Revisited
+
+- Once you understand how delegates work, it's very easy to understand events
+- Events are based on and use delegates
+
+- The only thing I need to do to make the delegate from the previous example into a delegate is to add the C# event keyword:
+
+GradeBook.cs
+```c#
+public event NameChangedDelegate NameChanged;
+```
+
+- Now, from outside the GradeBook, the only other thing that other pieces of code can do is add a subscriber (+=) or remove a subscriber (-=)
+- Previously, with just delegates, it would be possible to do an assignment and set it to null: book.NameChanged = null;
+  - Using events prevents this
+  - We want independent pieces of code to be able to subscribe and unsubscribe and not interfere with others
+
+- Adding a subscriber in previous example is now a bit verbose
+- You can remove the instantiation of new NameChangedDelegates (the C# compiler will instantiate it behind the scenees):
+
+```c#
+book.NameChanged += OnNameChanged;
+book.NameChanged += OnNameChanged2;
+```
+
+- We are breaking a .NET convention by passing in two string parameters in the above delegate
+- **CONVENTION**: An event always passes along two parameters: 
+  1. The first parameter is going to be the sender of the event (ex. GradeBook)
+  2. The second parameter contains all of the arguments or all of the needed information about that event
+    - Need to build another object to pass the existingName and newName so I can pass that object along as the arguments
+  3. The class that is passed as an object containing the data ends in EventArgs (ex. NameChangedEventArgs) and inherit from EventArgs
+
+NameChangedEventArgs.cs
+```c#
+public class NameChangedEventArgs : EventArgs
+{
+    public string ExistingName { get; set; }
+    public string NewName {get; set;}
+}
+```  
+
+NameChangedDelegate.cs
+```c#
+public delegate void NameChangedDelegate(object sender, NameChangedEventArgs args);
+```
+
+GradeBook.cs
+```c#
+public string Name
+{
+    get
+    {
+        return _name;
+    }
+    set
+    {
+        if (!String.IsNullOrEmpty(value))
+        {
+            if (_name != value)
+            {
+                NameChangedEventArgs args = new NameChangedEventArgs();     //  Instantiate
+                args.ExistingName = _name;                                  //  Current value
+                args.NewName = value;                                       //  Value implicitly passed
+
+                NameChanged(this, args);                                    //  this = this GradeBook instance
+            }
+            _name = value;
+        }
+    }
+}
+```
+
+Program.cs
+```c#
+static void Main(string[] args)
+{
+    GradeBook book = new GradeBook()
+
+    book.NameChanged = OnNameChanged;
+}
+
+static void OnNameChanged(object sender, NameChangedEventArgs args) => Console.WriteLine($"Grade book changing from {args.ExistingName} to {args.NewName}");
+```
