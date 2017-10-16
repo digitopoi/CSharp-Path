@@ -1201,11 +1201,11 @@ finally
 
 - using statement: I'm going to be using this unmanaged resource (ex. StreamWriter) in the following block of code.
 - curly braces to contain all of the code that will be using that resource
+- you then don't have to explicity close the stream
 
 ```c#
 using (StreamWriter outputFile = File.CreateText("grades.txt"))
 {
     book.WriteGrades(outputFile);
-    outputFile.Close();
 }
 ```
