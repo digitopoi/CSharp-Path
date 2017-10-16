@@ -966,3 +966,246 @@ static void Main(string[] args)
 
 static void OnNameChanged(object sender, NameChangedEventArgs args) => Console.WriteLine($"Grade book changing from {args.ExistingName} to {args.NewName}");
 ```
+
+## Control Flow
+
+### Branching
+
+#### If Statement
+- The if statement selects a statement for execution based on the value of a boolean expression
+- You don't have to use curly braces to execute single statements, but it's considered good practice (easier to maintain, somewhat more readable)
+- You must use curly braces to execute multiple statements
+
+```c#
+if (age <= 2)
+    ServeMilk();
+else if (age < 21)
+    ServeSoda();
+else 
+    ServeDrink();
+```
+
+- It's also possible to nest if statements
+- Be careful not to nest too many statements for readability
+
+```c#
+if (age <= 2)
+{
+    if (name == "Scott")
+    {
+        //  ...
+    }
+}
+```
+#### Conditional / Ternary Operator
+
+```c#
+string pass = age > 20 ? "pass" : "nopass";
+```
+
+Called a ternary operator because it has **three parts**:
+  1. boolean expression (age > 20)
+  2. return statement if true ("pass")
+  3. return statement if false ("nopass")
+
+#### Switching
+
+- branch execution of a program to a set of statements that are inside of a case label
+
+- must add a break statement to get out of switch statement
+
+- Restricted to integers, characters, strings, and enums
+  - Case labels are constant
+  - Default label is optional
+
+```c#
+switch(name) {
+    case "Scott":
+        ServeSoda();
+        break;
+    case "Alex":
+        ServeMilk();
+        ServeDrink();
+        break;
+    default:
+        ServeMilk();
+        break;
+}
+```
+
+### Iterating
+
+Four statements for iterating in C#:
+  1. foreach
+  ```c#
+  int[] ages = { 2, 21, 40, 72, 100 }
+  foreach (int value in ages)
+  {
+      Console.WriteLine(value);
+  }
+  ```
+  2. for
+  ```c#
+  for (int i = 0; i < age; i++)
+  {
+      Console.WriteLine(i);
+  }
+  ```
+  3. while
+  ```c#
+  while (age > 0)
+  {
+      age -= 1;
+      Console.WriteLine(age);
+  }
+  ```
+  4. do while
+  ```c#
+  do 
+  {
+      age ++;
+      Console.WriteLine(age);
+  } while (age < 100);
+  ```
+
+### Jumping
+
+#### break
+  - break out of a loop (or switch statement) and stop looping
+
+#### continue
+  - skip executing any code after the continue statement and go to the next iteration
+
+```c#
+foreach (int age in ages)
+{
+    if (age == 2) 
+    {
+        continue;
+    }
+    if (age == 21)
+    {
+        break;
+    }
+}
+```
+
+#### goto
+  - jump to another statement that is marked by a label
+  - most programmers avoid using at all costs
+
+#### return
+  - worth noting that you can use a return statement in a void method
+  - (just not allowed to pass a value back to the caller)
+
+  - in the following code, if we encounter an age = 21, we'll not only break out of the loop, but break out of the method itself:
+  ```c#
+  void CheckAges()
+  {
+      foreach (int age in ComputeAges())
+      {
+          if (age == 21) return;
+      }
+  }
+  ```
+
+#### throw
+  - exceptions
+
+### Throwing
+
+- Use throw to raise an exception
+
+- exceptions provide safe and structured error handling in .NET
+
+- use exceptions when the program finds itself in a situation where it cannot move forward
+  - bad input value
+  - program out of memory
+  - network not available
+  - etc.
+
+- When you throw an exception, you are throwing an **object**
+
+- An unhandled exception will terminate your program
+
+```c#
+if (age == 21)
+{
+    throw new ArgumentException("21 is not a legal value");
+}
+```
+
+### Handling Exceptions
+
+- Handle exceptions by using a try block
+
+- Inside of the try block, execute code that may throw an exception
+
+- The try block can by followed by one or more catch statements
+
+- Runtime will search for the closest matching catch statement
+
+```c#
+try
+{
+    ComputeStatistics();
+}
+catch(DivideByZeroException ex)
+{
+    Console.WriteLine(ex.Message);
+    Console.WriteLine(ex.StackTrace);
+}
+```
+
+### Chaining Catch Blocks
+
+- Place most specific type in the first catch clause
+
+- The first exception that specifies a matching exception type will be the catch block executed
+
+- Catching a System.Exception catches everything
+  - (except a few "special" exceptions)
+
+- If the general "Exception" was above the DivideByZero exception, the DivideByZero exception would never run
+```c#
+try {
+    //  ...
+}
+catch(DivideByZeroException ex)
+{
+    //  ...
+}
+catch(Exception ex)
+{
+    //  ...
+}
+```
+
+### Finally
+
+- Finally clause adds finalization code - allows you specify a block of code that is always going to execute, even if there is an exception inside of the try block
+
+- Executes even when control jumps out of scope
+
+
+```c#
+FileStream file = new FileStream("file.txt", FileMode.Open);
+try
+{
+}
+finally
+{
+    file.Close();
+}
+```
+
+- using statement: I'm going to be using this unmanaged resource (ex. StreamWriter) in the following block of code.
+- curly braces to contain all of the code that will be using that resource
+
+```c#
+using (StreamWriter outputFile = File.CreateText("grades.txt"))
+{
+    book.WriteGrades(outputFile);
+    outputFile.Close();
+}
+```
