@@ -1319,6 +1319,20 @@ public class B : A
 
 - A type can implement multiple interfaces
 
+- Best practice to define an interface with the leading capital I (IWindow)
+
+- In some ways, an interface is **like an abstract type** 
+  - in order to create a concrete class that implements this interface, I must implement all members present
+  - **Main difference b/w interface and abstract class** - When defining a class, I can only inherit from a single base class, but I can implement as many interfaces as I like
+
+- Ultimate abstraction! 
+  - allows you to define the API your software needs without defining any of the implementation details
+  - because any class or struct can inherit from any interface, interfaces are extremely flexible
+
+- Cannot add an access modifier to an interface (public, protected, private, etc.)
+  - when someone has an instance of the interface, it **has** to be available
+  - implicitly virtual since they're part of an interface
+
 ```c#
 public interface IWindow
 {
@@ -1330,4 +1344,18 @@ public interface IWindow
 
 ## Common Interfaces
 
+- IDisposable - Release resources (files, connections)
+
+- IEnumerable - Supports iteration (foreach)
+
+- INotifyPropertyChange - Raises events when properties change
+
+- IComparable - Compares sorting
+
 ## Where to Go Next
+
+  - C# Generic
+
+  - LINQ Fundamentals
+
+  - C# Programming Paradigms
