@@ -14,8 +14,8 @@ namespace Grades
             //book.Name = "Scott's Grade Book";
             //Console.WriteLine(book.Name);
 
-            GradeBook book = new GradeBook();
-            GetBookName(book);
+            GradeBook book = new ThrowAwayGradeBook();
+            //GetBookName(book);
             AddGrades(book);
             SaveGrades(book);
             WriteResults(book);

@@ -1209,3 +1209,125 @@ using (StreamWriter outputFile = File.CreateText("grades.txt"))
     book.WriteGrades(outputFile);
 }
 ```
+
+## Object Oriented Programming
+
+## The Pillars
+
+Three pillars of object oriented programming:
+
+  1. Encapsulation
+    - primary pillar of OOP
+    - without encapsulation, we could never build large applications or large systems
+    - helps us hide complexity
+    - hiding complexity and building models, which logically group together functionality.
+    - Inheritance and polymorphism are more about reusing code and reusing data
+
+  2. Inheritance
+    
+  3. Polymorphism
+
+## Inheritance
+  - a technique to define a relationship between two classes such that one class take on, or inherits, the members of another class
+  - the syntax is to have a colon after the name of your class, and then you specify the base class
+  - you do have to be cautious with inheritance because it does tie up your classes and your code into a tightly bound relationship
+
+  - **base** keyword - reach specific methods in a class that you've inherited from
+
+  - **protected** access modifier allows access for code that is in the class or code that is in a derived class
+  ```c#
+  public class A
+  {
+      public void DoWork()
+      {
+          //  ... work!
+      }
+  }
+
+  public class B : A
+  {
+
+  }
+
+  public class C : B
+  {
+
+  }
+  ```
+## Polymorphism
+
+- Polymorphism = "many shapes"
+
+- One variable can point to different types of objects
+  
+  - Any time you have a an inheritance relationahip you can have a variable typed as a base class that points to an object derived from that base class
+
+- Objects can behave differently depending on their type
+
+- Everything in C# inherits from System.Object
+
+- **virtual** keyword
+
+```c#
+public class A : Object
+{
+    public virtual void DoWork()
+    {
+        //  ...
+    }
+}
+
+public class B : A
+{
+    public override void DoWork()
+    {
+        //  optionally call into base...
+        base.DoWork();
+    }
+}
+```
+
+## Abstract Classes
+
+  - Abstract classes cannot be instantiated
+
+  - If you derive from Window, but do not provide an instantiation of the Open() method, you've provided another abstract class
+
+  - If you provide an implementation of Open(), you've now created a **concrete** type and you can instatiate it
+
+  - If you can't instantiate an abstract type - why is it useful?
+    
+    - Because of polymorphism - I can declare a variable of type Window and use that variable to point to any kind of concrete Window tha derives from this abstract type
+
+  ```c#
+  public abstract class Window
+  {
+      public virtual string Title { get; set;}
+
+      public virtual void Draw()
+      {
+          //    ... drawing code
+      }
+
+      public abstract void Open();
+  }
+  ```
+
+## Interfaces
+
+- Interfaces contain no implementation details (only the signature of methods, events, and properties)
+
+- A type can implement multiple interfaces
+
+```c#
+public interface IWindow
+{
+    string Title { get; set; }
+    void Draw();
+    void Open();
+}
+```
+
+## Common Interfaces
+
+## Where to Go Next

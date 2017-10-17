@@ -8,7 +8,7 @@ namespace Grades
     {
         //  Fields
         public NameChangedDelegate NameChanged;
-        private List<float> grades;
+        protected List<float> grades;
         private string _name;
 
         public string Name
